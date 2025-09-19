@@ -32,7 +32,7 @@ class ActronCoordinator(DataUpdateCoordinator[None]):
             hass,
             _LOGGER,
             config_entry=entry,
-            name="Test device",  # TODO device.values.get("name", DOMAIN),
+            name=device.device_id,
             update_interval=timedelta(seconds=10),
         )
         self.device = device

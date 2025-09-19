@@ -16,7 +16,6 @@ from .exceptions import ActronException
 
 _LOGGER = logging.getLogger(__name__)
 
-
 @dataclass
 class ServiceConfiguration:
     """Actron service configuration class for cloud service."""
@@ -77,6 +76,7 @@ class ServiceConfiguration:
                 self.notification_mode = data["notificationMode"]
                 self.signalr_endpoint = data["signalrEndpoint"]
 
+        # TODO: do this to other HTTP requests
         except ClientOSError as e:
             _LOGGER.error("Network error while fetching service configuration: %s", e)
             raise ActronException(f"Network error: {e}") from e

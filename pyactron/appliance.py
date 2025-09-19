@@ -2,7 +2,7 @@
 
 import asyncio
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 import logging
 from typing import Optional
@@ -16,14 +16,10 @@ from aiohttp.client_exceptions import (
 )
 from aiohttp.web_exceptions import HTTPForbidden
 from homeassistant.components.climate.const import HVACAction, HVACMode
-# from tenacity import (
-#     before_sleep_log,
-#     retry,
-#     retry_if_exception_type,
-#     stop_after_attempt,
-#     wait_random_exponential,
-# )
+
 import re
+
+from ..const import DEVICE_UPDATE_SKIP_SECONDS
 
 from .exceptions import ActronException
 
@@ -94,14 +90,7 @@ class Appliance:  # pylint: disable=too-many-public-methods
     _is_fan_continuous: bool
     _compressor_activity: int
     _enabled_zones: list[int]
-
-    TRANSLATIONS = {}
-
-    VALUES_TRANSLATION = {}
-
-    VALUES_SUMMARY = []
-
-    INFO_RESOURCES = []
+    _skip_update_until: datetime = datetime.min
 
     MAX_CONCURRENT_REQUESTS = 4
 
@@ -148,46 +137,36 @@ class Appliance:  # pylint: disable=too-many-public-methods
     async def update_status(self):
         """Update device status."""
 
-        # fetch info form the local device
-        try:
-            data_response = await self._get_resource("6.json")
+        # updating the state of the device can take some time to propagate to the actual device
+        # so we delay the update to the next update cycle to avoid the state going back and forth
+        # between actual state and desired state
+        if self._skip_update_until < datetime.now():
+            # fetch info form the local device
+            try:
+                data_response = await self._get_resource("6.json")
 
-            if not data_response:
-                raise ActronException("Invalid response from device")
-        except Exception as e:
-            _LOGGER.error("Error communicating with device: %s", e)
-            raise ActronException(f"Failed to communicate with device: {e}") from e
+                if not data_response:
+                    raise ActronException("Invalid response from device")
+            except Exception as e:
+                _LOGGER.error("Error communicating with device: %s", e)
+                raise ActronException(f"Failed to communicate with device: {e}") from e
 
-        # Extract basic info
-        try:
-            data = json.loads(data_response)
+            # Extract basic info
+            try:
+                data = json.loads(data_response)
 
-            self._is_on = data['isOn']
-            self._mode = data['mode']
-            self._fan_speed = data['fanSpeed']
-            self._target_temperature = data['setPoint']
-            self._current_temperature = data['roomTemp_oC']
-            self._is_esp_on = data['isInESP_Mode']
-            self._is_fan_continuous = data['fanIsCont']
-            self._compressor_activity = data['compressorActivity']
-            self._enabled_zones = data['enabledZones']
-        except ActronException as e:
-            _LOGGER.error("Error extracting values: %s", e)
-            raise
-
-    # @retry(
-    #     reraise=True,
-    #     wait=wait_random_exponential(multiplier=0.2, max=1.2),
-    #     stop=stop_after_attempt(3),
-    #     retry=retry_if_exception_type(
-    #         (
-    #             ClientOSError,
-    #             ClientResponseError,
-    #             ServerDisconnectedError,
-    #         )
-    #     ),
-    #     before_sleep=before_sleep_log(_LOGGER, logging.DEBUG),
-    # )
+                self._is_on = data['isOn']
+                self._mode = data['mode']
+                self._fan_speed = data['fanSpeed']
+                self._target_temperature = data['setPoint']
+                self._current_temperature = data['roomTemp_oC']
+                self._is_esp_on = data['isInESP_Mode']
+                self._is_fan_continuous = data['fanIsCont']
+                self._compressor_activity = data['compressorActivity']
+                self._enabled_zones = data['enabledZones']
+            except ActronException as e:
+                _LOGGER.error("Error extracting values: %s", e)
+                raise
 
     async def _get_resource(self, path: str, params: Optional[dict] = None):
         """Make the http request."""
@@ -276,6 +255,9 @@ class Appliance:  # pylint: disable=too-many-public-methods
                         response.url,
                     )
                 response.raise_for_status()
+            
+            # skip the update for a few seconds to avoid the state going back and forth
+            self._skip_update_until = datetime.now() + timedelta(seconds=DEVICE_UPDATE_SKIP_SECONDS)
         except Exception as e:
             _LOGGER.error("Unexpected error while sending a ninja command: %s", e)
             raise ActronException(f"Unexpected error: {e}") from e
@@ -294,26 +276,31 @@ class Appliance:  # pylint: disable=too-many-public-methods
 
         payload = f'{{"DA":{{"mode":{HVACMODE_TO_ACTRON[hvac_mode]} }}}}'
         await self._send_ninja_command(self._block_id, payload)
+        self._mode = HVACMODE_TO_ACTRON[hvac_mode]
 
     async def async_turn_on(self):
         """Turn the entity on."""
         payload = '{"DA":{"amOn":1} }'
         await self._send_ninja_command(self._block_id, payload)
+        self._is_on = True
 
     async def async_turn_off(self):
         """Turn the entity off."""
         payload = '{"DA":{"amOn":0} }'
         await self._send_ninja_command(self._block_id, payload)
+        self._is_on = False
 
     async def async_set_fan_mode(self, fan_mode: str):
         """Set new target fan mode."""
         payload = f'{{"DA":{{"fanSpeed":{FAN_SPEED_STRING_TO_ACTRON[fan_mode]} }}}}'
         await self._send_ninja_command(self._block_id, payload)
+        self._fan_speed = FAN_SPEED_STRING_TO_ACTRON[fan_mode]
 
     async def async_set_temperature(self, target_temperature: float):
         """Set new target temperature."""
         payload = f'{{"DA":{{"tempTarget":{target_temperature} }}}}'
         await self._send_ninja_command(self._block_id, payload)
+        self._target_temperature = target_temperature
 
     @property
     def manufacturer(self) -> str:

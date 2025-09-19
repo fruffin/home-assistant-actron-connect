@@ -81,9 +81,9 @@ class ActronToggleSwitch(ActronEntity, SwitchEntity):
     async def async_turn_on(self, **kwargs: Any) -> None:
         """Turn the AC on."""
         await self.device.async_turn_on()
-        # await self.coordinator.async_refresh()
+        await self.coordinator.async_refresh()
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the AC off."""
         await self.device.async_turn_off()
-        # await self.coordinator.async_refresh()
+        await self.coordinator.async_refresh()

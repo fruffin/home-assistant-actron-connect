@@ -18,8 +18,6 @@ from .coordinator import ActronConfigEntry, ActronCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-# TODO List the platforms that you want to support.
-# For your initial PR, limit it to 1 platform.
 _PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.SWITCH, Platform.CLIMATE]
 
 
@@ -33,7 +31,6 @@ def _recreate_actron_user(user_data: dict) -> ActronUser:
     return ActronUser.from_dict(user_data)
 
 
-# TODO Update entry annotation
 async def async_setup_entry(hass: HomeAssistant, entry: ActronConfigEntry) -> bool:
     """Set up actron_ultima from a config entry."""
     conf = entry.data
@@ -68,7 +65,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ActronConfigEntry) -> bo
     return True
 
 
-# TODO Update entry annotation
 async def async_unload_entry(hass: HomeAssistant, entry: ActronConfigEntry) -> bool:
     """Unload a config entry."""
     return await hass.config_entries.async_unload_platforms(entry, _PLATFORMS)

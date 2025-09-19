@@ -15,6 +15,8 @@ from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
+from .const import DEVICE_TARGET_TEMPERATURE_STEP, DEVICE_MIN_TEMP, DEVICE_MAX_TEMP, DEVICE_TEMP_UNIT
+
 from .coordinator import ActronConfigEntry, ActronCoordinator
 from .entity import ActronEntity
 
@@ -42,12 +44,12 @@ class ActronClimate(ActronEntity, ClimateEntity):
         self._attr_name = "Climate"
         self._attr_fan_modes = _FAN_MODES
         self._attr_hvac_modes = _HVAC_MODES
-        self._attr_target_temperature_step = 0.5
-        self._attr_min_temp = 16
-        self._attr_max_temp = 30
-        self._attr_temperature_unit = UnitOfTemperature.CELSIUS
+        self._attr_target_temperature_step = DEVICE_TARGET_TEMPERATURE_STEP
+        self._attr_min_temp = DEVICE_MIN_TEMP
+        self._attr_max_temp = DEVICE_MAX_TEMP
+        self._attr_temperature_unit = DEVICE_TEMP_UNIT
         self._attr_supported_features = (
-            ClimateEntityFeature.TARGET_TEMPERATURE 
+            ClimateEntityFeature.TARGET_TEMPERATURE
             | ClimateEntityFeature.FAN_MODE
             | ClimateEntityFeature.TURN_OFF
             | ClimateEntityFeature.TURN_ON
@@ -56,24 +58,29 @@ class ActronClimate(ActronEntity, ClimateEntity):
     async def async_set_hvac_mode(self, hvac_mode):
         """Set new target hvac mode."""
         await self.device.async_set_hvac_mode(hvac_mode)
-    
+        await self.coordinator.async_refresh()
+
     async def async_turn_on(self):
         """Turn the entity on."""
         await self.device.async_turn_on()
-        
+        await self.coordinator.async_refresh()
+
     async def async_turn_off(self):
         """Turn the entity off."""
         await self.device.async_turn_off()
+        await self.coordinator.async_refresh()
 
     async def async_set_fan_mode(self, fan_mode):
         """Set new target fan mode."""
         await self.device.async_set_fan_mode(fan_mode)
+        await self.coordinator.async_refresh()
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""
         # Extract temperature from kwargs and convert to float
         target_temperature = float(kwargs.get(ATTR_TEMPERATURE))
         await self.device.async_set_temperature(target_temperature)
+        await self.coordinator.async_refresh()
 
     @property
     def current_temperature(self) -> float:
@@ -94,7 +101,7 @@ class ActronClimate(ActronEntity, ClimateEntity):
     def hvac_mode(self) -> HVACMode:
         """Return the current HVAC mode."""
         return self.device.mode
-  
+
     @property
     def target_temperature(self) -> float:
         """Return the target temperature."""
