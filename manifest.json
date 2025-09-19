@@ -1,0 +1,13 @@
+{
+  "domain": "actron_ultima",
+  "name": "Actron Ultima AC",
+  "version": "1.0.0",
+  "codeowners": [
+    "@fruffin"
+  ],
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/actron_ultima",
+  "iot_class": "local_polling",
+  "requirements": [],
+  "zeroconf": []
+}
