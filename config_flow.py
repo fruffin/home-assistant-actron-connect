@@ -1,4 +1,4 @@
-"""Config flow for the actron_ultima integration."""
+"""Config flow for the actron_connect integration."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 )
 
 class FlowHandler(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for actron_ultima."""
+    """Handle a config flow for actron_connect."""
 
     VERSION = 1
 
@@ -70,7 +70,7 @@ class FlowHandler(ConfigFlow, domain=DOMAIN):
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
             else:
-                return self.async_create_entry(title=info["title"], data=entry_data)
+                return self.async_create_entry(title=entry_data[CONF_HOST], data=entry_data)
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors

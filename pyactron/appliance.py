@@ -316,7 +316,7 @@ class Appliance:  # pylint: disable=too-many-public-methods
     @property
     def model(self) -> str:
         """Return device's model."""
-        return "Actron Ultima"
+        return self.user.aircon_model
 
     @property
     def mac(self) -> str:

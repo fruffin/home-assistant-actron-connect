@@ -21,7 +21,7 @@ class ActronEntity(CoordinatorEntity[ActronCoordinator]):
                 (CONNECTION_NETWORK_MAC, self.device.mac)
             },
             manufacturer=self.device.manufacturer,
-            model=self.device.model,
+            model=self.device.user.aircon_model,
             name=self.device.device_id,
             sw_version= self.device.firmware_version,
         )

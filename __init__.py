@@ -1,4 +1,4 @@
-"""The actron_ultima integration."""
+"""The actron_connect integration."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ def _recreate_actron_user(user_data: dict) -> ActronUser:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ActronConfigEntry) -> bool:
-    """Set up actron_ultima from a config entry."""
+    """Set up actron_connect from a config entry."""
     conf = entry.data
 
     host = conf[CONF_HOST]
@@ -46,6 +46,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ActronConfigEntry) -> bo
 
     # refreshing the service configuration after restarts to make sure it is up to date
     await service_configuration.refresh_configuration()
+
+    # fix up the entry title now that the device details are loaded
+    hass.config_entries.async_update_entry(entry, title=user.aircon_block_id)
 
     # create the appliance
     device = Appliance(host, service_configuration, user, session)

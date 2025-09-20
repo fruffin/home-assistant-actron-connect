@@ -1,4 +1,4 @@
-"""Support for Actron Ultima zones."""
+"""Support for Actron Connect zones."""
 
 from __future__ import annotations
 

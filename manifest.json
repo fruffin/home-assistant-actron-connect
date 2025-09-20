@@ -1,12 +1,12 @@
 {
-  "domain": "actron_ultima",
-  "name": "Actron Ultima AC",
+  "domain": "actron_connect",
+  "name": "Actron Connect AC",
   "version": "1.0.0",
   "codeowners": [
     "@fruffin"
   ],
   "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/actron_ultima",
+  "documentation": "https://www.home-assistant.io/integrations/actron_connect",
   "iot_class": "local_polling",
   "requirements": [],
   "zeroconf": []

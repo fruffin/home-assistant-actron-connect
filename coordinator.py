@@ -11,6 +11,7 @@ from .pyactron.appliance import Appliance
 
 _LOGGER = logging.getLogger(__name__)
 
+type ActronConfigEntry = ConfigEntry[ActronCoordinator]
 class ActronCoordinator(DataUpdateCoordinator[None]):
     """Class to manage fetching Actron data."""
 
@@ -33,4 +34,4 @@ class ActronCoordinator(DataUpdateCoordinator[None]):
     async def _async_update_data(self) -> None:
         await self.device.update_status()
 
-type ActronConfigEntry = ConfigEntry[ActronCoordinator]
+

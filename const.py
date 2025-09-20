@@ -1,9 +1,9 @@
-"""Constants for the actron_ultima integration."""
+"""Constants for the actron_connect integration."""
 
 # DO NOT CHANGE THESE
 from homeassistant.const import UnitOfTemperature
 
-DOMAIN = "actron_ultima"
+DOMAIN = "actron_connect"
 ATTR_INSIDE_TEMPERATURE = "inside_temperature"
 CONF_SERVICE_CONFIGURATION = "service_configuration"
 CONF_USER = "user"

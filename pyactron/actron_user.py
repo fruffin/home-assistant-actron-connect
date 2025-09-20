@@ -6,6 +6,13 @@ from dataclasses import dataclass, asdict
 from typing import Optional
 
 _LOGGER = logging.getLogger(__name__)
+DEVICE_TYPE_TO_MODEL_NAME = {
+    0: "Standard Classic",
+    1: "ESP Plus",
+    2: "ESP Ultima",
+    3: "Platinum Plus",
+    4: "Platinum Ultima",
+}
 
 @dataclass
 class ActronUser:
@@ -28,6 +35,11 @@ class ActronUser:
     aircon_zone_number: int = 0
     zones: list[str] = None
     
+    @property
+    def aircon_model(self) -> str:
+        """Return the model of the aircon."""
+        return f"Actron {DEVICE_TYPE_TO_MODEL_NAME[self.aircon_type]}"
+
     def __post_init__(self):
         """Initialize after dataclass creation."""
         if self.zones is None:
