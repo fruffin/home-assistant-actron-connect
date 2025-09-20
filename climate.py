@@ -91,7 +91,7 @@ class ActronClimate(ActronEntity, ClimateEntity):
     def fan_mode(self) -> str:
         """Return the current fan mode."""
         return self.device.fan_speed
-
+    
     @property
     def hvac_action(self) -> HVACAction:
         """Return device's on status."""

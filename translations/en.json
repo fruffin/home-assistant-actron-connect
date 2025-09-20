@@ -13,8 +13,7 @@
                 "data": {
                     "host": "Host",
                     "password": "Password",
-                    "username": "Username",
-                    "zones": "Number of Zones"
+                    "username": "Username"
                 }
             }
         }

@@ -13,7 +13,7 @@ from .pyactron.appliance import Appliance
 from .pyactron.service_configuration import ServiceConfiguration
 from .pyactron.actron_user import ActronUser
 
-from .const import CONF_SERVICE_CONFIGURATION, CONF_USER, CONF_ZONES
+from .const import CONF_SERVICE_CONFIGURATION, CONF_USER
 from .coordinator import ActronConfigEntry, ActronCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,7 +36,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ActronConfigEntry) -> bo
     conf = entry.data
 
     host = conf[CONF_HOST]
-    zones = conf[CONF_ZONES]
 
     # recreate the service configuration from stored data
     session = async_get_clientsession(hass)
@@ -49,7 +48,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ActronConfigEntry) -> bo
     await service_configuration.refresh_configuration()
 
     # create the appliance
-    device = Appliance(host, service_configuration, user, zones, session)
+    device = Appliance(host, service_configuration, user, session)
     await device.init()
 
     # create the coordinator

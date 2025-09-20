@@ -20,7 +20,7 @@ from .pyactron.exceptions import ActronException
 
 from .pyactron.actron_user import ActronUser
 
-from .const import CONF_SERVICE_CONFIGURATION, CONF_USER, CONF_ZONES, DOMAIN
+from .const import CONF_SERVICE_CONFIGURATION, CONF_USER, DOMAIN
 from .pyactron.service_configuration import ServiceConfiguration
 
 _LOGGER = logging.getLogger(__name__)
@@ -31,7 +31,6 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_HOST): str,
         vol.Required(CONF_USERNAME): str,
         vol.Required(CONF_PASSWORD): str,
-        vol.Required(CONF_ZONES): int,
     }
 )
 
@@ -105,7 +104,6 @@ class FlowHandler(ConfigFlow, domain=DOMAIN):
                     CONF_HOST: user_input[CONF_HOST],
                     CONF_USERNAME: user_input[CONF_USERNAME],
                     CONF_PASSWORD: user_input[CONF_PASSWORD],
-                    CONF_ZONES: user_input[CONF_ZONES],
                     # Store service configuration data using dataclass serialization
                     CONF_SERVICE_CONFIGURATION: service_configuration.to_dict(),
                     # Store user data using dataclass serialization

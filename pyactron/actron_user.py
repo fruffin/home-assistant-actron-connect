@@ -25,7 +25,6 @@ class ActronUser:
     version: str = ""
     aircon_block_id: str = ""
     aircon_type: int = 0
-    # TODO use this instead of a configured number of zones
     aircon_zone_number: int = 0
     zones: list[str] = None
     

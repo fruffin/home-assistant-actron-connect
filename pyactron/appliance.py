@@ -75,7 +75,6 @@ class Appliance:  # pylint: disable=too-many-public-methods
     base_url: str
     service_configuration: ServiceConfiguration
     user: ActronUser
-    zones: int
     session: ClientSession
     _mac: str
     _device_id: str
@@ -94,13 +93,12 @@ class Appliance:  # pylint: disable=too-many-public-methods
 
     MAX_CONCURRENT_REQUESTS = 4
 
-    def __init__(self, hostname: str, service_configuration: ServiceConfiguration, user: ActronUser, zones: int, session: ClientSession) -> None:
+    def __init__(self, hostname: str, service_configuration: ServiceConfiguration, user: ActronUser, session: ClientSession) -> None:
         """Init the pyactron appliance, representing one Actron device."""
         self.hostname = hostname
         self.base_url = f"http://{self.hostname}"
         self.service_configuration = service_configuration
         self.user = user
-        self.zones = zones
         self.session = session
         self.request_semaphore = asyncio.Semaphore(value=self.MAX_CONCURRENT_REQUESTS)
         self.headers: dict = {}
@@ -242,6 +240,7 @@ class Appliance:  # pylint: disable=too-many-public-methods
     async def _send_ninja_command(self, block_id: str, payload: str) -> None:
         """Send a command to the Ninja service."""
         url = f'https://{self.service_configuration.ninja_service_host}/rest/v0/device/{block_id}?user_access_token={self.user.user_access_token}'
+
         try:
             async with self.session.put(
                 url,
@@ -301,6 +300,18 @@ class Appliance:  # pylint: disable=too-many-public-methods
         payload = f'{{"DA":{{"tempTarget":{target_temperature} }}}}'
         await self._send_ninja_command(self._block_id, payload)
         self._target_temperature = target_temperature
+
+    async def async_zone_turn_on(self, zone_id: int):
+        """Set zone status."""
+        self._enabled_zones[zone_id] = 1
+        payload = f'{{"DA":{{"enabledZones":{json.dumps(self._enabled_zones)} }}}}'
+        await self._send_ninja_command(self._block_id, payload)
+
+    async def async_zone_turn_off(self, zone_id: int):
+        """Set zone status."""
+        self._enabled_zones[zone_id] = 0
+        payload = f'{{"DA":{{"enabledZones":{json.dumps(self._enabled_zones)} }}}}'
+        await self._send_ninja_command(self._block_id, payload)
 
     @property
     def manufacturer(self) -> str:
@@ -380,46 +391,12 @@ class Appliance:  # pylint: disable=too-many-public-methods
         """Return device's enabled zones."""
         return self._enabled_zones
 
+    @property
+    def zone_names(self) -> list[str]:
+        """Return a list of zone names."""
+        return self.user.zones
+
     # @property
     # def support_zone_count(self) -> bool:
     #     """Return True if the device supports count of active zones."""
     #     return "en_zone" in self.values
-
-    # @property
-    # def outside_temperature(self) -> Optional[float]:
-    #     """Return current outside temperature."""
-    #     return self._parse_number("otemp")
-
-    # @property
-    # def inside_temperature(self) -> Optional[float]:
-    #     """Return current inside temperature."""
-    #     return self._parse_number("htemp")
-
-    # @property
-    # def target_temperature(self) -> Optional[float]:
-    #     """Return current target temperature."""
-    #     return self._parse_number("stemp")
-
-
-    # @property
-    # def zone_count(self) -> Optional[float]:
-    #     """Return number of enabled zones."""
-    #     return self._parse_number("en_zone")
-
-    # @property
-    # def fan_rate(self) -> list:
-    #     """Return list of supported fan rates."""
-    #     return list(map(str.title, self.TRANSLATIONS.get("f_rate", {}).values()))
-
-    # async def set(self, settings):
-    #     """Set settings on Daikin device."""
-    #     raise NotImplementedError
-
-    # @property
-    # def zones(self):
-    #     """Return list of zones."""
-    #     return
-
-    # async def set_zone(self, zone_id, key, value):
-    #     """Set zone status."""
-    #     raise NotImplementedError
