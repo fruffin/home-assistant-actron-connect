@@ -1,12 +1,10 @@
 """Pyactron base appliance, represent an Actron device."""
 
 import asyncio
-from collections import defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import json
 import logging
 from typing import Optional
-from urllib.parse import unquote
 
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import (
@@ -20,9 +18,7 @@ from homeassistant.components.climate.const import HVACAction, HVACMode
 import re
 
 from ..const import DEVICE_UPDATE_SKIP_SECONDS
-
 from .exceptions import ActronException
-
 from .actron_user import ActronUser
 from .service_configuration import ServiceConfiguration
 
@@ -261,7 +257,6 @@ class Appliance:  # pylint: disable=too-many-public-methods
             _LOGGER.error("Unexpected error while sending a ninja command: %s", e)
             raise ActronException(f"Unexpected error: {e}") from e
 
-    # TODO: for all actions, update the current local state as well
     async def async_set_hvac_mode(self, hvac_mode: HVACMode):
         """Set new target hvac mode."""
         # turn off the device if the mode is off

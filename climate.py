@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 from homeassistant.components.climate import (
     ClimateEntity,
@@ -11,22 +10,33 @@ from homeassistant.components.climate import (
     HVACAction,
     HVACMode,
 )
-from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
+from homeassistant.const import ATTR_TEMPERATURE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import DEVICE_TARGET_TEMPERATURE_STEP, DEVICE_MIN_TEMP, DEVICE_MAX_TEMP, DEVICE_TEMP_UNIT
+from .const import (
+    DEVICE_TARGET_TEMPERATURE_STEP,
+    DEVICE_MIN_TEMP,
+    DEVICE_MAX_TEMP,
+    DEVICE_TEMP_UNIT,
+)
 
 from .coordinator import ActronConfigEntry, ActronCoordinator
 from .entity import ActronEntity
 
 _LOGGER = logging.getLogger(__name__)
 
-_HVAC_MODES: list[HVACMode] = [HVACMode.COOL, HVACMode.HEAT, HVACMode.FAN_ONLY, HVACMode.HEAT_COOL, HVACMode.OFF]
+_HVAC_MODES: list[HVACMode] = [
+    HVACMode.COOL,
+    HVACMode.HEAT,
+    HVACMode.FAN_ONLY,
+    HVACMode.HEAT_COOL,
+    HVACMode.OFF,
+]
 _FAN_MODES: list[str] = ["low", "medium", "high"]
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     entry: ActronConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:

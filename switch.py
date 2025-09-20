@@ -14,7 +14,7 @@ from .entity import ActronEntity
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     entry: ActronConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:

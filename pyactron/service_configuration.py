@@ -2,8 +2,8 @@
 
 import json
 import logging
-from dataclasses import dataclass, asdict
-from typing import ClassVar, Optional
+from dataclasses import dataclass
+from typing import ClassVar
 
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import (

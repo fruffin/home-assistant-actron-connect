@@ -5,8 +5,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from .pyactron.appliance import Appliance
-
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -20,7 +18,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from .const import ATTR_INSIDE_TEMPERATURE
 from .coordinator import ActronConfigEntry, ActronCoordinator
 from .entity import ActronEntity
-
+from .pyactron.appliance import Appliance
 
 @dataclass(frozen=True, kw_only=True)
 class ActronSensorEntityDescription(SensorEntityDescription):
@@ -39,9 +37,8 @@ SENSOR_TYPES: tuple[ActronSensorEntityDescription, ...] = (
     ),
 )
 
-
 async def async_setup_entry(
-    hass: HomeAssistant,
+    _hass: HomeAssistant,
     entry: ActronConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
