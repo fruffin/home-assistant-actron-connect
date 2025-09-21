@@ -1,6 +1,6 @@
 {
   "domain": "actron_connect",
-  "name": "Actron Connect AC",
+  "name": "Actron Connect",
   "version": "1.0.0",
   "codeowners": [
     "@fruffin"
