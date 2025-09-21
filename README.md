@@ -38,15 +38,15 @@ The integration uses the standard `climate` entity type, which is compatible wit
 
 Integration entries overview:
 
-![Integration entries overview](./images/integration-entries.png "Integration entries overview")
+![Integration entries overview](./images/integration-entries.png?raw=true "Integration entries overview")
 
 Device information:
 
-![Device information](./images/device-info.png "Device information")
+![Device information](./images/device-info.png?raw=true "Device information")
 
 Dashboard thermostat card:
 
-![Dashboard thermostat card](./images/dashboard-with-zones.png "Dashboard thermostat card")
+![Dashboard thermostat card](./images/dashboard-with-zones.png?raw=true "Dashboard thermostat card")
 
 ## Limitations
 
@@ -94,16 +94,14 @@ cards:
         entity: switch.aconnect6827193ea688_zone_studies
         name: Studies
         icon: mdi:desk-lamp
-
-
 ```
 
 ## Uninstallation
 
 ## Future development
+
 The integration does not have a logo yet, but this is being worked on.
 
 This integration has only been tested with one device so far, so I am not comfortable releasing it to the Home Assistant integration store yet. This will be done once some feedback has been received by more users on a variety of devices.
 
-The `Thermostat` card does not currently support turning the device on and off other than by using the AC modes. It also doesn't support turning individual zones on and off. The next step is to develop a custom card that supports those features, but for now the workaround is to 
-
+The `Thermostat` card does not currently support turning the device on and off other than by using the AC modes. It also doesn't support turning individual zones on and off. The next step is to develop a custom card that supports those features, but for now the workaround is to
